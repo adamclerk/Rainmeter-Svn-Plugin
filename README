@@ -1,1 +1,12 @@
-This project has been cloned from the Rainmeter-Batch-Plugin with the intention to update the plugin to support svn repositories.
+This project has been cloned from the Rainmeter-Batch-Plugin. You can reference a remote svn project that has been copied localy by using the following config.
+
+[ProjectName]
+Measure=Plugin
+Plugin=SvnPlugin.dll
+LocalRepoPath="C:\sourcecontrol\project"
+RepoAlias="Jlog Trunk"
+Width=25
+LogLimit=20
+UpdateDivider=10
+
+Width the is the width of the line.  I use monospaced fonts for me meters so that everything is equaly spaced.
