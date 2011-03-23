@@ -4,9 +4,16 @@ This project has been cloned from the Rainmeter-Batch-Plugin. You can reference 
 Measure=Plugin
 Plugin=SvnPlugin.dll
 LocalRepoPath="C:\sourcecontrol\project"
-RepoAlias="Jlog Trunk"
+RepoAlias="Project Name"
 Width=25
 LogLimit=20
 UpdateDivider=10
 
 Width the is the width of the line.  I use monospaced fonts for me meters so that everything is equaly spaced.
+
+The output of the plugin will be...
+
+Project Name            5
+
+When there are 5 new revisions remotely compared to the local version
+
