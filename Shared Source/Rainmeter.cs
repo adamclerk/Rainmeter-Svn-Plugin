@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
+using SvnPlugin;
 
 // This is a utility class / toolkit for communicating with Rainmeter and managing
 // logging, INI settings, bangs, window positioning, multiple instances, and temporary
@@ -11,7 +12,7 @@ using System.Threading;
 //
 // Rather, most of your plugin's code should go in PluginCode.cs or additional files
 // that you create (such as new forms, classes, and controls).
-namespace CSPluginTemplate
+namespace RM
 {
     public class Rainmeter
     {

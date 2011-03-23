@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using CustomPluginObjects;
+using RM;
 
 // The bulk of your plugin's code belongs in this file.
-namespace CSPluginTemplate
+namespace SvnPlugin
 {
     class PluginCode
     {
-
-        private string _output = "test";
+        private string bat = @"c:\ps1\SVN\querysvn.bat";
+        private SvnInfo svn;
+        private string path;
+        private int width = 20;
+     
         // 'Update', 'Update2', and 'GetString' all return data back to Rainmeter, depending on
         // if the Rainmeter measure wants a numeric value or a string/text data.
         //
@@ -28,31 +33,45 @@ namespace CSPluginTemplate
             return 7.0;
         }
 
+
         public string GetString(Rainmeter.Settings.InstanceSettings Instance)
         {
-            WriteDebug("ConfigName", Instance.ConfigName);
-            WriteDebug("Variable:BatchFile", Instance.INI_Value("BatchFile") );
+            var counter = 0;
+            var updateCounter = 1;
+            var retVal = "Error";
 
-            var now = DateTime.Now;
-            var lastAccess = Instance.GetVariable("LastAccess");
-            var updateSpan = Convert.ToInt32(Instance.INI_Value("Update"));
-            var wait = Convert.ToInt32(Instance.INI_Value("Update"));
-            if (string.IsNullOrEmpty(lastAccess))
-                wait = 1;
+            if (!String.IsNullOrEmpty(Instance.GetVariable("counter")))
+                counter = Convert.ToInt32(Instance.GetVariable("counter"));
+
+            if (!String.IsNullOrEmpty(Instance.INI_Value("UpdateDivider")))
+                updateCounter = Convert.ToInt32(Instance.INI_Value("UpdateDivider"));
+
+            if (!String.IsNullOrEmpty(Instance.GetVariable("retVal")))
+                retVal = Instance.GetVariable("retVal");
+            
+            if (!String.IsNullOrEmpty(Instance.INI_Value("Width")))
+                width = Convert.ToInt16(Instance.INI_Value("Width"));
+
+            if (counter % updateCounter == 0)
+            {
+                
+                try
+                {
+                    GetSvnInfo(Instance);
+                    retVal = svn.Alias + new string(' ', width - svn.Alias.Length - svn.Updates.Length) + svn.Updates;
+                    Instance.SetVariable("retVal", retVal);
+                }
+                catch (Exception e)
+                {
+                    Debug.Write("Exception", e.ToString());
+                }
+                return retVal;
+            }
             else
             {
-                TimeSpan span = now - Convert.ToDateTime(lastAccess);
-                if (span.TotalMilliseconds > updateSpan)
-                {
-                    wait = 1;
-                }
+                Instance.SetVariable("counter", counter++);
+                return retVal;
             }
-            
-            var file = Instance.INI_Value("BatchFile");
-            System.Threading.Thread.Sleep(wait);
-            Instance.SetVariable("LastAccess", DateTime.Now);
-            return GetBatchString(file);
-
         }
 
 
@@ -63,33 +82,43 @@ namespace CSPluginTemplate
             return;
         }
 
-        private string GetBatchString(string path)
+        public void WriteBatch()
         {
+            if (File.Exists(bat)) return;
+            StreamWriter w = new StreamWriter(bat, false);
+            w.WriteLine("@ECHO OFF");
+            w.WriteLine("svn info --xml %1");
+            w.Close();
+            w.Dispose();
+        }
+
+        public void GetSvnInfo(Rainmeter.Settings.InstanceSettings Instance)
+        {
+            path = Instance.INI_Value("LocalRepoPath");
+            WriteBatch();
+            
+            var alias = Instance.INI_Value("RepoAlias");
+            
+            var logLimit = Convert.ToInt16(Instance.INI_Value("LogLimit"));
+
             var p = new Process
-            {
-                StartInfo =
-                {
-                    CreateNoWindow = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    FileName = path
-                }
-            };
+                        {
+                            StartInfo =
+                                {
+                                    CreateNoWindow = true,
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    FileName = bat,
+                                    Arguments = path,
+                                    WindowStyle = ProcessWindowStyle.Hidden
+                                }
+                            };
+            p.StartInfo.UseShellExecute = false;
             p.Start();
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
-            return output;
-        }
 
-        private void WriteDebug(string name, string value)
-        {
-            return;
-            var w = new StreamWriter(@"c:\debug.out", true);
-            var n = DateTime.Now;
-            w.WriteLine(n.ToShortDateString() + " " + n.ToShortTimeString() + " Name:" + name +" Value:" + value);
-            w.Close();
-            w.Dispose();
+            svn = new SvnInfo(alias, output, logLimit);
         }
     }
 }

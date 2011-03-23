@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSPluginTemplate
+namespace RM
 {
     public class Main
     {

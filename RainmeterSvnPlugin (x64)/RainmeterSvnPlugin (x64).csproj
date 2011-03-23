@@ -53,10 +53,28 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <ProjectGuid>{3ADA7253-B7E6-4249-B384-34FCEB3A01F9}</ProjectGuid>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <NoWarn>1607</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Shared Source\Debug.cs">
+      <Link>Debug.cs</Link>
+    </Compile>
     <Compile Include="..\Shared Source\Main.cs" />
     <Compile Include="..\Shared Source\PluginCode.cs" />
     <Compile Include="..\Shared Source\Rainmeter.cs" />
+    <Compile Include="..\Shared Source\SvnInfo.cs">
+      <Link>SvnInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -96,6 +114,15 @@
     <Reference Include="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=AMD64">
       <HintPath>..\..\..\..\Windows\Microsoft.NET\Framework64\v2.0.50727\mscorlib.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shared Source\BatchFiles\querysvn.bat">
+      <Link>querysvn.bat</Link>
+    </None>
+    <None Include="..\Shared Source\BatchFiles\svnlog.bat">
+      <Link>svnlog.bat</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -106,6 +133,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"$(TargetDir)fix_dll.bat" $(ConfigurationName) $(TargetFileName)</PostBuildEvent>
+    <PostBuildEvent>"$(TargetDir)fix_dll.bat" $(ConfigurationName) $(TargetFileName)
+</PostBuildEvent>
   </PropertyGroup>
 </Project>
